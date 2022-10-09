@@ -2,11 +2,12 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import TopBar from "../components/TopBar";
+import {wrapper } from "../modules/store"
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <TopBar />
+      {/* <TopBar /> */}
       <Box maxWidth="container.xl" margin="auto">
         <Component {...pageProps} />
       </Box>
@@ -14,4 +15,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default wrapper.withRedux(MyApp);

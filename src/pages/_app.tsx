@@ -2,17 +2,23 @@ import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Box, ChakraProvider } from "@chakra-ui/react";
 import TopBar from "../components/TopBar";
-import {wrapper } from "../modules/store"
+import { wrapper } from "../modules/store";
+import { Provider } from "react-redux";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, ...rest }: AppProps) {
+  const { store, props } = wrapper.useWrappedStore(rest);
+  const { pageProps } = props;
   return (
-    <ChakraProvider>
-      {/* <TopBar /> */}
-      <Box maxWidth="container.xl" margin="auto">
-        <Component {...pageProps} />
-      </Box>
-    </ChakraProvider>
+    <Provider store={store}>
+      <ChakraProvider>
+        {/* <TopBar /> */}
+
+        <Box maxWidth="container.xl" margin="auto">
+          <Component {...pageProps} />
+        </Box>
+      </ChakraProvider>
+    </Provider>
   );
 }
 
-export default wrapper.withRedux(MyApp);
+export default MyApp;

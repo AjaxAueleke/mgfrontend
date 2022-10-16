@@ -1,21 +1,16 @@
 import {
   Box,
   Button,
-  Checkbox,
-  Container,
   Divider,
   FormControl,
-  FormHelperText,
   FormLabel,
-  Heading,
-  HStack,
   Input,
   Stack,
   Text,
-  useBreakpointValue,
-  useColorModeValue,
   Link,
   FormErrorMessage,
+  useToast,
+  Select,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NextLink from "next/link";
@@ -36,9 +31,10 @@ const Signup: NextPage = () => {
   const [confirmPassword, setConfirmPassword] = useState<String>("");
   const [phone, setPhone] = useState<String>("");
   const [errors, setErrors] = useState<IError>({});
+  const [gender, setGender] = useState<String>("");
   const [apiError, setApiError] = useState<String>("");
   const router = useRouter();
-
+  const toast = useToast();
   const submitHandler = async (e: any) => {
     console.log("RUNNING");
     e.preventDefault();
@@ -119,26 +115,66 @@ const Signup: NextPage = () => {
     }
 
     // if there are no errors, post data
+    for (const key in errors) {
+      if (errors[key] === "") {
+        delete errors[key];
+      }
+    }
     if (Object.keys(errors).length === 0) {
-      // const res = await fetch("/api/signup", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      //   body: JSON.stringify({
-      //     name,
-      //     email,
-      //     password,
-      //     phone,
-      //   }),
-      // });
-      // const data = await res.json();
-      // if (data.errors) {
-      //   setApiError(data.errors[0].message);
-      // }
-      // if (data.user) {
-      //   router.push("/login");
-      // }
+      console.log("PUSHING");
+      try {
+        const res = await fetch("http://65.2.20.95:3000/api/v1/users/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            password,
+            confirmpassword: confirmPassword,
+            phone,
+            gender
+          }),
+        });
+        const data = await res.json();
+        console.log(data);
+        if (data.error) {
+          toast({
+            title: "An error occurred.",
+            description: data.error,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+          });
+        }
+        if (data.status === "success") {
+          toast({
+            title: "Account created.",
+            description: "We've created your account for you.",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+            position: "top",
+            containerStyle: {
+              backgroundColor: "green.500",
+            },
+          });
+          router.push("/login");
+        }
+      } catch (err) {
+        console.log(err);
+        toast({
+          title: "An error occurred.",
+          description: "We were unable to create your account.",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top",
+        });
+      }
     }
   };
 
@@ -150,7 +186,7 @@ const Signup: NextPage = () => {
       m="auto"
       mx={["10px", "auto", "auto", "auto"]}
       mt={5}
-      borderRadius="md"
+      borderRadius="lg"
       boxShadow="xs"
       rounded="lg"
       textAlign={"center"}
@@ -185,6 +221,17 @@ const Signup: NextPage = () => {
                   {errors.name}
                 </FormErrorMessage>
               )}
+            </FormControl>
+          </Box>
+          <Box>
+            <FormControl isRequired={true}>
+              <FormLabel>Gender</FormLabel>
+              <Select placeholder="Select option" onChange={e => {
+                setGender(e.target.value)
+              }}>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </Select>
             </FormControl>
           </Box>
           <Box>

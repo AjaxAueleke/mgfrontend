@@ -1,7 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import { Box, ChakraProvider } from "@chakra-ui/react";
-import TopBar from "../components/TopBar";
 import { wrapper } from "../modules/store";
 import { Provider } from "react-redux";
 

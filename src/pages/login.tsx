@@ -11,11 +11,14 @@ import {
   FormErrorMessage,
   useToast,
   Select,
+  Center,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setAuthState } from "../features/auth";
 import emailValidator from "../util/emailValidator";
 interface IError {
   name?: string;
@@ -28,6 +31,7 @@ const Login: NextPage = () => {
   const [email, setEmail] = useState<String>("");
   const [password, setPassword] = useState<String>("");
   const [errors, setErrors] = useState<IError>({});
+  const dispatch = useDispatch();
   const router = useRouter();
   const toast = useToast();
   const submitHandler = async (e: any) => {
@@ -74,7 +78,7 @@ const Login: NextPage = () => {
     if (Object.keys(errors).length === 0) {
       console.log("PUSHING");
       try {
-        const res = await fetch("http://65.2.20.95:3000/api/v1/users/signup", {
+        const res = await fetch("http://65.2.20.95:3000/api/v1/users/login", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -86,6 +90,7 @@ const Login: NextPage = () => {
           }),
         });
         const data = await res.json();
+
         console.log(data);
         if (data.error) {
           toast({
@@ -99,17 +104,18 @@ const Login: NextPage = () => {
         }
         if (data.status === "success") {
           toast({
-            title: "Account created.",
-            description: "We've created your account for you.",
+            title: "Success.",
+            description: data.message,
             status: "success",
             duration: 9000,
             isClosable: true,
             position: "top",
-            containerStyle: {
-              backgroundColor: "green.500",
-            },
           });
-          router.push("/login");
+          if (typeof window !== "undefined") {
+            localStorage.setItem("token", data.token);
+          }
+          dispatch(setAuthState(true));
+          // router.push("/dashboard");
         }
       } catch (err) {
         console.log(err);
@@ -212,7 +218,7 @@ const Login: NextPage = () => {
       <Stack mt={6} spacing={4}>
         <Divider />
         <Text fontSize="sm" as="h3" color="muted">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <NextLink href={"/signup"}>
             <Link color="teal.500">Sign Up</Link>
           </NextLink>

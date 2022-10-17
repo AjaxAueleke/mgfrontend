@@ -1,33 +1,83 @@
-import type { NextPage } from "next";
-import { useColorMode, Button, Box, Text, VStack } from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useSelector } from "react-redux";
-import { selectAuthState } from "../features/auth";
-import { useEffect } from "react";
-const Home: NextPage = () => {
-  const { colorMode, toggleColorMode } = useColorMode();
-  const router = useRouter();
-  const auth = useSelector(selectAuthState);
-  useEffect(() => {
-    console.log(auth);
-    if (!auth) {
-      router.push("/login");
-    }
-  }, [auth]);
-  return (
-    <VStack padding="10">
-      <Text fontSize="4xl" fontWeight="bold" as="h1">
-        Chakra UI
-      </Text>
-      <Text fontSize="2xl" fontWeight="semibold" as="h2">
-        Rendering in {colorMode} mode
-      </Text>
-      <Button aria-label="UI Theme" onClick={toggleColorMode}>
-        Toggle {colorMode === "light" ? "dark" : "light"}
-        mode
-      </Button>
-    </VStack>
-  );
-};
+import {
+  Button,
+  Flex,
+  Heading,
+  Image,
+  Stack,
+  Text,
+  useBreakpointValue,
+} from "@chakra-ui/react";
+import Link from "next/link";
+import NavBar from "../components/NavBar";
 
-export default Home;
+export default function Home(props) {
+  return (
+    <>
+      <NavBar cta="Getting Started" />
+
+      <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+        <Flex p={8} flex={1} align={"center"} justify={"center"}>
+          <Stack spacing={6} w={"full"} maxW={"lg"}>
+            <Heading fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}>
+              <Text
+                as={"span"}
+                position={"relative"}
+                _after={{
+                  content: "''",
+                  width: "full",
+                  height: useBreakpointValue({ base: "20%", md: "30%" }),
+                  position: "absolute",
+                  bottom: 1,
+                  left: 0,
+                  bg: "teal.400",
+                  zIndex: -1,
+                }}
+              >
+                SkinCare.
+              </Text>
+              <br />{" "}
+              <Text color={"teal.400"} as={"span"}>
+                Appoitments Made Easy
+              </Text>{" "}
+            </Heading>
+            <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>
+              Pakistan&apos;s leading appointment management system.
+            </Text>
+            <Stack direction={{ base: "column", md: "row" }} spacing={4}>
+              <Button
+                rounded={"full"}
+                bg={"teal.400"}
+                color={"white"}
+                padding={"10px"}
+                fontSize={["sm", "md"]}
+                _hover={{
+                  bg: "teal.500",
+                }}
+              >
+                <Link href={"/login"}>Book your next appointment</Link>
+              </Button>
+              <Button rounded={"full"}>
+                <Link href={"/signup"}>Sign Up</Link>
+              </Button>
+            </Stack>
+          </Stack>
+        </Flex>
+        <Flex flex={1}>
+          <Image
+            alt={"Login Image"}
+            objectFit={"cover"}
+            src={
+              "https://images.unsplash.com/photo-1527689368864-3a821dbccc34?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
+            }
+          />
+        </Flex>
+      </Stack>
+    </>
+  );
+}
+
+export async function getStaticProps(context) {
+  return {
+    props: {},
+  };
+}

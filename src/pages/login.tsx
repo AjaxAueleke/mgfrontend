@@ -115,7 +115,7 @@ const Login: NextPage = () => {
             localStorage.setItem("token", data.token);
           }
           dispatch(setAuthState(true));
-          // router.push("/dashboard");
+          router.push("/patient");
         }
       } catch (err) {
         console.log(err);

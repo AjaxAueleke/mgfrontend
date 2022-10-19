@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, Input } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, Input } from "@chakra-ui/react";
 
 interface ISearchBox {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -9,31 +9,31 @@ interface ISearchBox {
 export default function SearchBox(props: ISearchBox) {
   const { onChange, onClick, onSubmit } = props;
   return (
-    <FormControl>
-      <Flex alignItems={"center"} flexWrap="nowrap">
-        <Input
-          flexGrow="3"
-          type="text"
-          placeholder="Search"
-          onChange={onChange}
-          borderRadius="sm"
-          maxW={"container.md"}
-          borderRightRadius="none"
-        />
-        <Button
-          flexGrow="1"
-          borderRadius={"sm"}
-          borderLeftRadius="none"
-          color="whiteAlpha.900"
-          fontWeight={"bold"}
-          fontStyle="italic"
-          bg={"teal.500"}
-          fontSize={["sm", "md"]}
-          onClick={onClick}
-        >
-          Search
-        </Button>
-      </Flex>
-    </FormControl>
+      <FormControl>
+        <Flex alignItems={"center"} flexWrap="nowrap" justify="center">
+          <Input
+            flexGrow="3"
+            type="text"
+            placeholder="Search"
+            onChange={onChange}
+            borderRadius="sm"
+            maxW={"container.md"}
+            borderRightRadius="none"
+          />
+          <Button
+            flexGrow="0"
+            borderRadius={"sm"}
+            borderLeftRadius="none"
+            color="whiteAlpha.900"
+            fontWeight={"bold"}
+            fontStyle="italic"
+            bg={"teal.500"}
+            fontSize={["sm", "md"]}
+            onClick={onClick}
+          >
+            Search
+          </Button>
+        </Flex>
+      </FormControl>
   );
 }

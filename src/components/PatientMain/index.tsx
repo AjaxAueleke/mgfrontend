@@ -2,7 +2,7 @@ import { Box, Divider, VStack } from "@chakra-ui/react";
 import SearchBox from "../SearchBox";
 
 interface IPatientMain {
-  doctorList : 
+  doctorList : any[]
 }
 
 export default function PatientMain() {

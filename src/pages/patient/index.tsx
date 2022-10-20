@@ -1,3 +1,4 @@
+import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -8,27 +9,69 @@ import {
   selectUserState,
   setAuthState,
 } from "../../features/auth";
-
+export interface ISchedule {
+  scheduleid: number;
+  location: string;
+  latitude: string;
+  longitude: string;
+  day: string;
+  from: string;
+  till: string;
+}
+export interface IDoctor {
+  userId?: number;
+  name?: string;
+  phone?: string;
+  sessionfee?: number;
+  qualifications?: [string];
+  rating?: number;
+  specializedtreatments?: [string];
+  photo?: string;
+  doctorschedule?: [ISchedule];
+}
 export default function Home() {
   const user = useSelector(selectUserState);
   console.log(user);
   const authState = useSelector(selectUserState);
   const dispatch = useDispatch();
   const router = useRouter();
+  const [doctorList, setDoctorList] = useState<Array<IDoctor>>([]);
+  const [loading, setLoading] = useState<Boolean>(false);
+  const toast = useToast();
+  const fetchDoctors = async (url: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      setDoctorList((prev) => [...prev, ...data.data]);
+    } catch (err) {
+      toast({
+        position: "top",
+        title: "Error",
+        description: "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (!authState && localStorage.getItem("token") === null) {
       router.push("/login");
     }
-    if (!authState && localStorage.getItem("token") !== null) {
+    if (localStorage.getItem("token") !== null) {
       dispatch(setAuthState(true));
     }
-    if (authState && localStorage.getItem("token") !== null) {
+    if (localStorage.getItem("token") !== null) {
       dispatch(fetchUserDetails(localStorage.getItem("token")));
     }
-    return () => {};
+
+    fetchDoctors(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/getalldoc`)
   }, []);
   const [search, setSearch] = useState<string>("");
-  const [doctorList, setDoctorList] = useState<any[]>([]);
+
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -42,7 +85,7 @@ export default function Home() {
   return (
     <>
       <PatientNav />
-      <PatientMain />
+      <PatientMain doctorList={doctorList} isLoading={loading} />
     </>
   );
 }

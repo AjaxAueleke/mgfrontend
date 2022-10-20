@@ -19,6 +19,8 @@ import {
   Container,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { selectUserState } from "../../features/auth";
+import { useSelector } from "react-redux";
 
 const Links = ["Dashboard", "Projects", "Team"];
 
@@ -39,6 +41,7 @@ const NavLink = ({ children }: { children: ReactNode }) => (
 
 export default function PatientNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const user = useSelector(selectUserState);
 
   return (
     <>

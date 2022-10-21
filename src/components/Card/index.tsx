@@ -14,9 +14,10 @@ import { IDoctor } from "../../pages/patient";
 
 export interface IDoctorCard {
   doctor: IDoctor;
+  onOpen: (doctor: IDoctor) => void;
 }
 export default function DoctorCard(props: IDoctorCard) {
-  const { doctor } = props;
+  const { doctor, onOpen } = props;
   return (
     <Box
       maxW={"445px"}
@@ -40,23 +41,37 @@ export default function DoctorCard(props: IDoctorCard) {
       <Box p={6}>
         <Stack spacing={0} align={"center"} mb={5}>
           <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
-            {doctor.name}
+            {doctor.name?.toUpperCase()}
           </Heading>
-          <Text color={"gray.500"}>{doctor.qualifications?.join(', ')}</Text>
-          <Text color={"gray.500"}>{doctor.specializedtreatments?.join(', ')}</Text>
+          <Text color={"gray.500"} fontSize="2xs">
+            {doctor.qualifications?.join(", ")}
+          </Text>
+          <Text color={"gray.500"} fontSize="1xl">
+            {doctor.specializedtreatments?.join(", ")}
+          </Text>
         </Stack>
 
         <Stack direction={"row"} justify={"center"} spacing={6}>
           <Stack spacing={0} align={"center"}>
-            <Text fontWeight={600}>23k</Text>
-            <Text fontSize={"sm"} color={"gray.500"}>
-              Followers
+            <Text fontWeight={600}>{doctor.rating}/5</Text>
+            <Text
+              fontSize={"sm"}
+              color={"gray.500"}
+              textAlign="center"
+              textShadow="md"
+            >
+              Average Rating
             </Text>
           </Stack>
           <Stack spacing={0} align={"center"}>
-            <Text fontWeight={600}>23k</Text>
-            <Text fontSize={"sm"} color={"gray.500"}>
-              Followers
+            <Text fontWeight={600}>{doctor?.doctorschedule?.length}</Text>
+            <Text
+              fontSize={"sm"}
+              color={"gray.500"}
+              textAlign="center"
+              textShadow={"md"}
+            >
+              Available Days
             </Text>
           </Stack>
         </Stack>
@@ -71,8 +86,9 @@ export default function DoctorCard(props: IDoctorCard) {
             transform: "translateY(-2px)",
             boxShadow: "lg",
           }}
+          onClick={() => onOpen(doctor)}
         >
-          Follow
+          See Available Days
         </Button>
       </Box>
     </Box>

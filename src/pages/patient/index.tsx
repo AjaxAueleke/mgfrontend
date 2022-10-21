@@ -1,7 +1,9 @@
+import { useDisclosure } from "@chakra-ui/core";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AppointmentModal from "../../components/Modal";
 import PatientMain from "../../components/PatientMain";
 import PatientNav from "../../components/PatientNav";
 import {
@@ -43,7 +45,7 @@ export default function Home() {
     try {
       const response = await fetch(url);
       const data = await response.json();
-      setDoctorList((prev) => [...prev, ...data.data]);
+      setDoctorList((prev) => [...data.data]);
     } catch (err) {
       toast({
         position: "top",

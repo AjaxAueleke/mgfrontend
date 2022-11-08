@@ -29,7 +29,7 @@ export interface IDoctor {
   rating?: number;
   specializedtreatments?: [string];
   photo?: string;
-  doctorschedule?: [ISchedule];
+  doctorschedule?: Array<ISchedule>;
 }
 export default function Home() {
   const user = useSelector(selectUserState);

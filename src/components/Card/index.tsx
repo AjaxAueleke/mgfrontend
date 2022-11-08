@@ -9,7 +9,9 @@ import {
   Stack,
   Button,
   useColorModeValue,
+  textDecoration,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { IDoctor } from "../../pages/patient";
 
 export interface IDoctorCard {
@@ -40,8 +42,18 @@ export default function DoctorCard(props: IDoctorCard) {
 
       <Box p={6}>
         <Stack spacing={0} align={"center"} mb={5}>
-          <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
-            {doctor.name?.toUpperCase()}
+          <Heading
+            fontSize={"2xl"}
+            fontWeight={500}
+            fontFamily={"body"}
+            _hover={{
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+          >
+            <Link href={`/doctor/${doctor?.userId}`}>
+              {doctor.name?.toUpperCase()}
+            </Link>
           </Heading>
           <Text color={"gray.500"} fontSize="2xs">
             {doctor.qualifications?.join(", ")}

@@ -8,6 +8,7 @@ import {
   ModalCloseButton,
   Button,
 } from "@chakra-ui/react";
+import Link from "next/link";
 import { IDoctor } from "../../pages/patient";
 import AppointmentModalBody from "./ModalBody";
 
@@ -32,16 +33,18 @@ export default function AppointmentModal(props: ISchedueleModal) {
           <ModalHeader>Modal Title</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <AppointmentModalBody doctor={doctor} />
+            <AppointmentModalBody doctor={doctor} onClick={() => {}} />
           </ModalBody>
 
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={onClose}>
               Close
             </Button>
-            <Button variant="ghost" onClick={bookAnAppointment}>
-              Secondary Action
-            </Button>
+            <Link href={`/doctor/${doctor?.userId}`}>
+              <Button variant="ghost" onClick={bookAnAppointment}>
+                Book An Appointment
+              </Button>
+            </Link>
           </ModalFooter>
         </ModalContent>
       </Modal>

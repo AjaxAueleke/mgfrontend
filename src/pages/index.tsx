@@ -8,9 +8,17 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import { Router, useRouter } from "next/router";
+import { useEffect } from "react";
 import NavBar from "../components/NavBar";
 
-export default function Home(props) {
+export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    if (localStorage.getItem("token") !== null) {
+      router.push("/patient");
+    }
+  });
   return (
     <>
       <NavBar cta="Getting Started" />
@@ -76,8 +84,10 @@ export default function Home(props) {
   );
 }
 
-export async function getStaticProps(context) {
+export async function getStaticProps() {
   return {
     props: {},
   };
 }
+
+

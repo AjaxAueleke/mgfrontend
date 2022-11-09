@@ -18,6 +18,8 @@
     "@emotion/styled": "^11.10.4",
     "@googlemaps/react-wrapper": "^1.1.35",
     "@reduxjs/toolkit": "^1.8.6",
+    "@stripe/react-stripe-js": "^1.14.2",
+    "@stripe/stripe-js": "^1.42.1",
     "@testing-library/react": "^13.4.0",
     "axios": "^1.1.2",
     "emotion-theming": "^11.0.0",

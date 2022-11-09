@@ -5,10 +5,12 @@ import { ISchedule } from "../../pages/patient";
 
 export interface IAppointmentModalBody {
   doctor: IDoctor | null;
-  onClick: () => void;
+  onClick: (schedule: ISchedule) => void;
+  selectedSlot: ISchedule | null;
 }
 export default function AppointmentModalBody({
   doctor,
+  selectedSlot,
   onClick,
 }: IAppointmentModalBody) {
   return (
@@ -30,11 +32,35 @@ export default function AppointmentModalBody({
               {doctor?.doctorschedule?.map((schedule: ISchedule) => (
                 <Box
                   key={schedule.scheduleid}
-                  backgroundColor={"teal.500"}
-                  color={"white"}
+                  backgroundColor={
+                    selectedSlot?.scheduleid == schedule.scheduleid
+                      ? "teal.500"
+                      : "white"
+                  }
+                  borderRadius={"md"}
+                  _hover={{
+                    backgroundColor: "teal.400",
+                    cursor: "pointer",
+                    boxShadow: "md",
+                    transform: "scale(1.1)",
+                    color : "white",
+                    transition : "all 0.2s ease-in-out"
+                  }}
+                  sx={{
+                    "&:hover a": {
+                      color: "white",
+                    }
+                  }}
+                  color={
+                    selectedSlot?.scheduleid == schedule.scheduleid
+                      ? "white"
+                      : "gray.700"
+                  }
                   px={"6"}
                   py={"4"}
-                  onClick={onClick}
+                  onClick={() => {
+                    onClick(schedule);
+                  }}
                 >
                   <Stack spacing={"5px"}>
                     <Text fontSize={"xl"} fontWeight={"bold"}>
@@ -50,7 +76,11 @@ export default function AppointmentModalBody({
                         target="_blank"
                       >
                         <Text
-                          color="white"
+                          color={
+                            selectedSlot?.scheduleid == schedule.scheduleid
+                              ? "white"
+                              : "gray.500"
+                          }
                           fontSize="sm"
                           fontWeight={"light"}
                           textDecoration="underline"

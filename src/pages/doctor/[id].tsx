@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Divider,
   Flex,
   Heading,
@@ -18,8 +19,9 @@ import { ReactNode, useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import PatientNav from "../../components/PatientNav";
 import { fetchUserDetails } from "../../features/auth";
-import { IDoctor } from "../patient";
+import { IDoctor, ISchedule } from "../patient";
 import AppointmentModalBody from "../../components/Modal/ModalBody";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 
 interface Review {
   review_reviewdate: string | number | Date;
@@ -37,7 +39,7 @@ interface RatingProps {
   rating: number;
 }
 
-function Rating({ rating }: RatingProps) {
+export function Rating({ rating }: RatingProps) {
   return (
     <Box display="flex" alignItems="center">
       {Array(5)
@@ -71,6 +73,8 @@ export default function Doctor({
 }) {
   const router = useRouter();
   const dispatch = useDispatch();
+  const [selectedSlot, setSelectedSlot] = useState<ISchedule | null>(null);
+
   useEffect(() => {
     if (localStorage.getItem("token") === null) {
       router.push("/login");
@@ -213,43 +217,51 @@ export default function Doctor({
 
       {/* Book an Appointment */}
       <Box m={10}>
-        <Heading  fontWeight={"semibold"}>
-          Book an Appointment
-        </Heading>
+        <Heading fontWeight={"semibold"}>Book an Appointment</Heading>
         {doctor?.doctorschedule?.length === 0 ? (
           <Box>
             <Text>Doctor is not available this week</Text>
-            </Box>
-        ): (
-          <AppointmentModalBody doctor={doctor} />
+          </Box>
+        ) : (
+          <AppointmentModalBody
+            doctor={doctor}
+            selectedSlot={selectedSlot}
+            onClick={(schedule: ISchedule) => {
+              setSelectedSlot(schedule);
+            }}
+          />
         )}
+        <Divider />
         <Box>
+          <Button
+            disabled={selectedSlot === null}
+            colorScheme="teal"
+            _hover={{ bg: "teal.500", color: "white" }}
+            onClick={() => {
+              router.push(
+                "/patient/appointment/confirm/" +
+                  selectedSlot?.scheduleid +
+                  "/" +
+                  doctor?.userId
+              );
+            }}
+          >
+            <Flex alignItems={"center"}>
+              <Box mx={"2px"}>
+                <Text>Book Appointment</Text>
+              </Box>
+              <Box mx={"2px"}>
+                <CheckCircleIcon />
+              </Box>
+            </Flex>
+          </Button>
         </Box>
-        </Box>
+      </Box>
     </>
   );
 }
 
-export async function getStaticPaths() {
-  const paths = [
-    {
-      params: {
-        id: "1",
-      },
-    },
-    {
-      params: {
-        id: "2",
-      },
-    },
-  ];
-
-  return {
-    paths,
-    fallback: true,
-  };
-}
-export async function getStaticProps(context: any) {
+export async function getServerSideProps(context: any) {
   const { id } = context.params;
   let reviews = [];
   let doctor = {};
@@ -271,8 +283,10 @@ export async function getStaticProps(context: any) {
     console.log(err);
     return {
       props: {},
-      revalidate: 120,
-      notFound: true,
+      redirect: {
+        destination: "/500",
+        permanent: false,
+      },
     };
   }
   try {
@@ -289,12 +303,17 @@ export async function getStaticProps(context: any) {
     console.log(reviews);
   } catch (err) {
     reviews = [];
+    return {
+      redirect: {
+        destination: "/500",
+        permanent: false,
+      },
+    };
   }
   return {
     props: {
       doctor,
       reviews,
     }, // will be passed to the page component as props
-    revalidate: 120,
   };
 }

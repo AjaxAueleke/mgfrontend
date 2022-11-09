@@ -11,6 +11,7 @@ import {
   selectUserState,
   setAuthState,
 } from "../../features/auth";
+import { setDoctors } from "../../features/doctors";
 export interface ISchedule {
   scheduleid: number;
   location: string;
@@ -40,12 +41,15 @@ export default function Home() {
   const [doctorList, setDoctorList] = useState<Array<IDoctor>>([]);
   const [loading, setLoading] = useState<Boolean>(false);
   const toast = useToast();
+  const dispath = useDispatch();
+
   const fetchDoctors = async (url: string) => {
     setLoading(true);
     try {
       const response = await fetch(url);
       const data = await response.json();
       setDoctorList((prev) => [...data.data]);
+      dispatch(setDoctors(data.data));
     } catch (err) {
       toast({
         position: "top",
@@ -70,7 +74,9 @@ export default function Home() {
       dispatch(fetchUserDetails(localStorage.getItem("token")));
     }
 
-    fetchDoctors(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/getalldoc`)
+    fetchDoctors(
+      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/getalldoc`
+    );
   }, []);
   const [search, setSearch] = useState<string>("");
 

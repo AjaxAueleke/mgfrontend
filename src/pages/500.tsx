@@ -1,9 +1,10 @@
-import { Text, Container } from "@chakra-ui/react";
+import { Text, Container, Box } from "@chakra-ui/react";
 
 export default function Error() {
   return (
-    <Container
+    <Box
       minW="100%"
+      margin={0}
       minH={"100vh"}
       bgColor={"blackAlpha.900"}
       display="flex"
@@ -13,6 +14,6 @@ export default function Error() {
       <Text fontSize="2xl" color="white" textAlign="center" fontWeight="bold">
         An error has occured. There may be some problem with your internet.
       </Text>
-    </Container>
+    </Box>
   );
 }

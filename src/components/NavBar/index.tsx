@@ -7,6 +7,7 @@ interface INavBar {
 export default function NavBar({ cta }: INavBar) {
   return (
     <Flex
+    
       w="100%"
       px={"8"}
       py={"4"}

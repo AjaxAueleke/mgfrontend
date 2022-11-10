@@ -22,22 +22,32 @@ import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { selectUserState } from "../../features/auth";
 import { useSelector } from "react-redux";
 
-const Links = ["Dashboard", "Projects", "Team"];
+const Links = [
+  { text: "Find Doctors", link: "/patient" },
+  { text: "See Appointments", link: "/patient/appointment" },
+  { text: "Message", link: "/message" },
+];
 
-const NavLink = ({ children }: { children: ReactNode }) => (
-  <Link
-    px={2}
-    py={1}
-    rounded={"md"}
-    _hover={{
-      textDecoration: "none",
-      bg: useColorModeValue("gray.200", "gray.700"),
-    }}
-    href={"#"}
-  >
-    {children}
-  </Link>
-);
+const NavLink = (props: { text: string; link: string }) => {
+  const { text, link } = props;
+  return (
+    <Link
+      px={2}
+      py={1}
+      mx={5}
+      rounded={"md"}
+      color={useColorModeValue("white", "gray.200")}
+      _hover={{
+        textDecoration: "none",
+        color: useColorModeValue("gray.800", "white"),
+        bg: useColorModeValue("gray.200", "gray.700"),
+      }}
+      href={`${link}`}
+    >
+      <Text>{text}</Text>
+    </Link>
+  );
+};
 
 export default function PatientNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -71,9 +81,10 @@ export default function PatientNav() {
               as={"nav"}
               spacing={4}
               display={{ base: "none", md: "flex" }}
+              mx={5}
             >
               {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+                <NavLink key={link.link} text={link.text} link={link.link} />
               ))}
             </HStack>
           </Flex>
@@ -86,12 +97,7 @@ export default function PatientNav() {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar
-                  size={"sm"}
-                  src={
-                    "https://images.unsplash.com/photo-1493666438817-866a91353ca9?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                  }
-                />
+                <Avatar size={"sm"} src={user?.photo || ''} />
               </MenuButton>
               <MenuList borderRadius="md" boxShadow="outline">
                 <MenuItem>Link 1</MenuItem>
@@ -107,7 +113,7 @@ export default function PatientNav() {
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
               {Links.map((link) => (
-                <NavLink key={link}>{link}</NavLink>
+                <NavLink key={link.link} text={link.text} link={link.link} />
               ))}
             </Stack>
           </Box>

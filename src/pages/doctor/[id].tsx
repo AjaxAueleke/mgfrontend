@@ -79,7 +79,7 @@ export default function Doctor({
     if (localStorage.getItem("token") === null) {
       router.push("/login");
     }
-    dispatch(fetchUserDetails());
+    dispatch(fetchUserDetails(localStorage.getItem("token")));
     // fetchDoctor();
     return () => {};
   }, []);

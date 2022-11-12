@@ -21,6 +21,7 @@ import {
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { selectUserState } from "../../features/auth";
 import { useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const Links = [
   { text: "Find Doctors", link: "/patient" },
@@ -52,7 +53,7 @@ const NavLink = (props: { text: string; link: string }) => {
 export default function PatientNav() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const user = useSelector(selectUserState);
-
+  const router = useRouter();
   return (
     <>
       <Box bg={useColorModeValue("teal.500", "teal.900")} px={4} width="100%">
@@ -97,14 +98,19 @@ export default function PatientNav() {
                 cursor={"pointer"}
                 minW={0}
               >
-                <Avatar size={"sm"} src={user?.photo || ''} />
+                <Avatar size={"sm"} src={user?.photo || ""} />
               </MenuButton>
-              <MenuList borderRadius="md" boxShadow="outline">
-                <MenuItem>Link 1</MenuItem>
+              <MenuList borderRadius="md" border={`1px solid #e428f0`}>
+                <MenuItem>Edit Details</MenuItem>
                 <MenuDivider />
-                <MenuItem>Link 2</MenuItem>
-                <MenuDivider />
-                <MenuItem>Log Out</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    router.push("/login");
+                  }}
+                >
+                  Log Out
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>

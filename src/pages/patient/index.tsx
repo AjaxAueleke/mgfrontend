@@ -13,6 +13,7 @@ import {
 } from "../../features/auth";
 import { setDoctors } from "../../features/doctors";
 export interface ISchedule {
+  availabledate: any;
   scheduleid: number;
   location: string;
   latitude: string;
@@ -21,6 +22,7 @@ export interface ISchedule {
   from: string;
   till: string;
 }
+
 export interface IDoctor {
   userId?: number;
   name?: string;
@@ -32,6 +34,7 @@ export interface IDoctor {
   photo?: string;
   doctorschedule?: Array<ISchedule>;
 }
+
 export default function Home() {
   const user = useSelector(selectUserState);
   console.log(user);

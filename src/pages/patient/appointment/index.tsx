@@ -1,9 +1,25 @@
 //Appointment page for patient
 // path: src\pages\patient\appointment\index.tsx
 
-import { Divider, Select, SimpleGrid, Spinner } from "@chakra-ui/react";
+import {
+  Divider,
+  Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Radio,
+  RadioGroup,
+  Select,
+  SimpleGrid,
+  Spinner,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { Box, Heading, useToast } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import PatientNav from "../../../components/PatientNav";
 import { fetchUserDetails } from "../../../features/auth";
@@ -18,6 +34,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 const StarRating = () => {
   const [rating, setRating] = useState(0);
@@ -54,8 +71,30 @@ export function AppointmentCard({
 }: {
   appointment: IAppointmnet;
 }) {
+  const {
+    isOpen: isOpenReview,
+    onOpen: onOpenReview,
+    onClose: onCloseReview,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenComplain,
+    onOpen: onOpenComplain,
+    onClose: onCloseComplain,
+  } = useDisclosure();
+
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState(0);
+  const [complain, setComplain] = useState("");
+  const [reason, setReason] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const finalRef = useRef(null);
+  const toast = useToast();
+
+  const router = useRouter();
+
   return (
-    <Center py={6}>
+    <Center py={6} ref={finalRef}>
       <Stack
         borderWidth="1px"
         borderRadius="lg"
@@ -105,6 +144,7 @@ export function AppointmentCard({
               bg: "gray.200",
             }}
             disabled={new Date() < new Date(appointment.appointment_aptdate)}
+            onClick={onOpenComplain}
           >
             Complain
           </Button>
@@ -124,11 +164,106 @@ export function AppointmentCard({
               bg: "blue.500",
             }}
             disabled={new Date() < new Date(appointment.appointment_aptdate)}
+            onClick={onOpenReview}
           >
             Review
           </Button>
         </Stack>
       </Stack>
+
+      <Modal
+        finalFocusRef={finalRef}
+        isOpen={isOpenReview}
+        onClose={() => {
+          onCloseReview();
+          router.replace(router.asPath);
+        }}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Give Feedback</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Stack spacing={4}>
+              <Select
+                placeholder="Rate your experience"
+                onChange={(e) => setRating(parseInt(e.target.value))}
+              >
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </Select>
+              <Input
+                placeholder="Review"
+                onChange={(e) => setReview(e.target.value)}
+              />
+            </Stack>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                onCloseReview();
+                router.replace(router.asPath);
+              }}
+            >
+              Close
+            </Button>
+            <Button colorScheme="blue" mr={3}>
+              Submit Review
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        finalFocusRef={finalRef}
+        isOpen={isOpenComplain}
+        onClose={() => {
+          onCloseComplain();
+          router.replace(router.asPath);
+        }}
+        isCentered
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add a complain</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <RadioGroup onChange={setReason} value={reason}>
+              <Stack direction="column">
+                <Radio value="1">First</Radio>
+                <Radio value="2">Second</Radio>
+                <Radio value="3">Third</Radio>
+              </Stack>
+            </RadioGroup>
+            <Input
+              disabled={reason !== "10"}
+              placeholder="Complain"
+              onChange={(e) => setComplain(e.target.value)}
+            />
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                onCloseComplain();
+                router.replace(router.asPath);
+              }}
+            >
+              Close
+            </Button>
+            <Button colorScheme="blue" mr={3}>
+              Submit Complain
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Center>
   );
 }

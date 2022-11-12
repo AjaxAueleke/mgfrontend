@@ -1,4 +1,4 @@
-import { useDisclosure } from "@chakra-ui/core";
+import { useDisclosure } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";

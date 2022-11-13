@@ -49,10 +49,10 @@ export default function Home() {
   const fetchDoctors = async (url: string) => {
     setLoading(true);
     try {
-      const response = await fetch(url);
-      const data = await response.json();
-      setDoctorList((prev) => [...data.data]);
-      dispatch(setDoctors(data.data));
+      // const response = await fetch(url);
+      // const data = await response.json();
+      // setDoctorList((prev) => [...data.data]);
+      // dispatch(setDoctors(data.data));
     } catch (err) {
       toast({
         position: "top",

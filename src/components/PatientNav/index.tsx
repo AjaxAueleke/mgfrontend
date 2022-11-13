@@ -35,7 +35,6 @@ const NavLink = (props: { text: string; link: string }) => {
     <Link
       px={2}
       py={1}
-      mx={5}
       rounded={"md"}
       color={useColorModeValue("white", "gray.200")}
       _hover={{
@@ -101,7 +100,13 @@ export default function PatientNav() {
                 <Avatar size={"sm"} src={user?.photo || ""} />
               </MenuButton>
               <MenuList borderRadius="md" border={`1px solid #e428f0`}>
-                <MenuItem>Edit Details</MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    router.push("/patient/profile");
+                  }}
+                >
+                  Edit Details
+                </MenuItem>
                 <MenuDivider />
                 <MenuItem
                   onClick={() => {

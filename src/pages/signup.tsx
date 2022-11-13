@@ -17,7 +17,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import emailValidator from "../util/emailValidator";
-interface IError {
+export interface IError {
   name?: string;
   email?: string;
   password?: string;
@@ -115,7 +115,7 @@ const Signup: NextPage = () => {
     }
 
     // if there are no errors, post data
-    for (const key in errors) {
+    for (const key: string in errors) {
       if (errors[key] === "") {
         delete errors[key];
       }
@@ -135,7 +135,7 @@ const Signup: NextPage = () => {
             password,
             confirmpassword: confirmPassword,
             phone,
-            gender
+            gender,
           }),
         });
         const data = await res.json();
@@ -226,9 +226,12 @@ const Signup: NextPage = () => {
           <Box>
             <FormControl isRequired={true}>
               <FormLabel>Gender</FormLabel>
-              <Select placeholder="Select option" onChange={e => {
-                setGender(e.target.value)
-              }}>
+              <Select
+                placeholder="Select option"
+                onChange={(e) => {
+                  setGender(e.target.value);
+                }}
+              >
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
               </Select>

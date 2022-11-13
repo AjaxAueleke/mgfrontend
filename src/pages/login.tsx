@@ -223,6 +223,12 @@ const Login: NextPage = () => {
             <Link color="teal.500">Sign Up</Link>
           </NextLink>
         </Text>
+        <Text fontSize="sm" as="h3" color="muted">
+          Forgot your password.{" "}
+          <NextLink href={"/forgot"}>
+            <Link color="teal.500">Click Here</Link>
+          </NextLink>
+        </Text>
       </Stack>
     </Box>
   );

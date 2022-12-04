@@ -78,17 +78,20 @@ const Login: NextPage = () => {
     if (Object.keys(errors).length === 0) {
       console.log("PUSHING");
       try {
-        const res = await fetch("http://65.2.20.95:3000/api/v1/users/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: JSON.stringify({
-            email,
-            password,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/login`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+            body: JSON.stringify({
+              email,
+              password,
+            }),
+          }
+        );
         const data = await res.json();
 
         console.log(data);

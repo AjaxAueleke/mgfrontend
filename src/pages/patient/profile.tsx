@@ -16,22 +16,34 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import router from "next/router";
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Footer } from "../../components/Footer";
 import PatientNav from "../../components/PatientNav";
-import { selectUserState } from "../../features/auth";
+import { fetchUserDetails, selectUserState } from "../../features/auth";
 import emailValidator from "../../util/emailValidator";
 import { IError } from "../signup";
 
 export default function Profile(props: {}) {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (localStorage.getItem("token") === null) {
+      router.push("/login");
+    }
+    // dispatch(fetchUserDetails());
+  }, []);
   const userDetails = useSelector(selectUserState);
-  const [name, setName] = useState<string>(userDetails.name);
-  const [email, setEmail] = useState<string>(userDetails.email);
-  const [phone, setPhone] = useState<string>(userDetails.phone);
-  const [gender, setGender] = useState<string>(userDetails.gender);
+  console.log(userDetails);
+  const [name, setName] = useState<string>(userDetails?.name);
+  const [email, setEmail] = useState<string>(userDetails?.user?.email);
+  const [phone, setPhone] = useState<string>(userDetails?.phone);
+  const [gender, setGender] = useState<string>(userDetails?.gender);
   const [errors, setErrors] = useState<IError>({});
+  const [perros, setPerros] = useState<any>({});
+  const [password, setPassword] = useState<string>("");
+  const [npassword, setNPassword] = useState<string>("");
   const toast = useToast();
-
+  const [loading, setLoading] = useState<boolean>();
   const submitHandler = async (e: any) => {
     console.log("RUNNING");
     e.preventDefault();
@@ -85,18 +97,23 @@ export default function Profile(props: {}) {
     if (Object.keys(errors).length === 0) {
       console.log("PUSHING");
       try {
+        console.log({
+          name,
+          phone,
+          gender,
+        });
         const res = await fetch(
-          "http://65.2.20.95:3000/api/v1/users/editdetails",
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/change`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
               "Access-Control-Allow-Origin": "*",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
             body: JSON.stringify({
-              name,
-              phone,
-              gender,
+              property: ["name", "phone", "gender"],
+              value: [name, phone, gender.toLowerCase()],
             }),
           }
         );
@@ -114,8 +131,8 @@ export default function Profile(props: {}) {
         }
         if (data.status === "success") {
           toast({
-            title: "Account created.",
-            description: "We've created your account for you.",
+            title: "Account updated.",
+            description: "We've updated your account for you.",
             status: "success",
             duration: 9000,
             isClosable: true,
@@ -124,13 +141,13 @@ export default function Profile(props: {}) {
               backgroundColor: "green.500",
             },
           });
-          router.push("/login");
+          // router.push("/login");
         }
       } catch (err) {
         console.log(err);
         toast({
           title: "An error occurred.",
-          description: "We were unable to create your account.",
+          description: "We were unable to update your account.",
           status: "error",
           duration: 9000,
           isClosable: true,
@@ -139,13 +156,71 @@ export default function Profile(props: {}) {
       }
     }
   };
+
+  const passwordHandler = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/changepassword`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            oldpw: password,
+            newpw: npassword,
+            newpwconfirm: npassword,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.status === "success") {
+        toast({
+          title: "Password changed.",
+          description: "We've changed your password for you.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top",
+          containerStyle: {
+            backgroundColor: "green.500",
+          },
+        });
+        router.push("/login");
+      } else {
+        toast({
+          title: "An error occurred.",
+          description: data.error,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top",
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Could not update your password",
+        status: "error",
+        duration: 1000,
+        isClosable: true,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <PatientNav />
       <Box>
         <Center py={6}>
           <Box
-            maxW={["sm", "md"]}
+            maxW={["sm", "md", "lg"]}
             w={"full"}
             bg={useColorModeValue("white", "gray.800")}
             boxShadow={"2xl"}
@@ -161,7 +236,7 @@ export default function Profile(props: {}) {
             <Flex justify={"center"} mt={-12}>
               <Avatar
                 size={"xl"}
-                src={userDetails!.photo | ""}
+                src={userDetails?.photo | ""}
                 alt={"Author"}
                 css={{
                   border: "2px solid white",
@@ -232,6 +307,7 @@ export default function Profile(props: {}) {
                           placeholder="Enter your email"
                           id="2"
                           value={email}
+                          disabled={true}
                           onChange={(e) => {
                             setEmail(e.target.value);
                           }}
@@ -286,6 +362,7 @@ export default function Profile(props: {}) {
                   transform: "translateY(-2px)",
                   boxShadow: "lg",
                 }}
+                onClick={submitHandler}
               >
                 Update
               </Button>
@@ -293,6 +370,82 @@ export default function Profile(props: {}) {
           </Box>
         </Center>
       </Box>
+      <Box>
+        <Center py={6}>
+          <Box
+            maxW={["sm", "md", "lg"]}
+            w={"full"}
+            bg={useColorModeValue("white", "gray.800")}
+            boxShadow={"2xl"}
+            rounded={"md"}
+            overflow={"hidden"}
+          >
+            <Box p={6}>
+              <Stack spacing={0} align={"center"} mb={5}>
+                <Heading fontSize={"2xl"} fontWeight={500} fontFamily={"body"}>
+                  Change Password
+                </Heading>
+                <Stack spacing="4" mt="4">
+                  <form onSubmit={passwordHandler}>
+                    <Box>
+                      <FormControl
+                        isRequired={true}
+                        isInvalid={password.length === 0 || password.length < 6}
+                      >
+                        <FormLabel>Current Password</FormLabel>
+                        <Input
+                          type="password"
+                          placeholder="Enter your current password"
+                          id="1"
+                          value={password}
+                          onChange={(e) => {
+                            setPassword(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Box>
+                    <Box>
+                      <FormControl
+                        isRequired={true}
+                        isInvalid={
+                          npassword.length === 0 || npassword.length < 6
+                        }
+                      >
+                        <FormLabel>New Password</FormLabel>
+                        <Input
+                          type="password"
+                          placeholder="Enter your new password"
+                          id="2"
+                          value={npassword}
+                          onChange={(e) => {
+                            setNPassword(e.target.value);
+                          }}
+                        />
+                      </FormControl>
+                    </Box>
+                  </form>
+                </Stack>
+              </Stack>
+              <Button
+                w={"full"}
+                mt={8}
+                bg={useColorModeValue("#151f21", "gray.900")}
+                color={"white"}
+                rounded={"md"}
+                disabled={loading}
+                _hover={{
+                  transform: "translateY(-2px)",
+                  boxShadow: "lg",
+                }}
+                onClick={passwordHandler}
+              >
+                Update Password
+              </Button>
+            </Box>
+          </Box>
+        </Center>
+      </Box>
+      <Footer />
     </>
   );
 }

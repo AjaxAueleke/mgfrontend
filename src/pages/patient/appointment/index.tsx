@@ -68,6 +68,7 @@ const StarRating = () => {
 
 export function AppointmentCard({
   appointment,
+  filter,
 }: {
   appointment: IAppointmnet;
 }) {
@@ -76,21 +77,142 @@ export function AppointmentCard({
     onOpen: onOpenReview,
     onClose: onCloseReview,
   } = useDisclosure();
+  const [review, setReview] = useState("");
+
+  const [rating, setRating] = useState(0);
+  const [complain, setComplain] = useState("");
+  const [reason, setReason] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     isOpen: isOpenComplain,
     onOpen: onOpenComplain,
     onClose: onCloseComplain,
   } = useDisclosure();
-
-  const [review, setReview] = useState("");
-  const [rating, setRating] = useState(0);
-  const [complain, setComplain] = useState("");
-  const [reason, setReason] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const finalRef = useRef(null);
   const toast = useToast();
+  const handleComplain = async (id: number, aptdate: string) => {
+    try {
+      setIsSubmitting(true);
+      console.log({
+        appointmentid: id,
+        reason: reason,
+        description: complain,
+        aptdate: aptdate,
+      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/complains/adddoctorcomplain`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            appointmentid: id,
+            reason: complain,
+            description: reason,
+            aptdate: aptdate,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.status === "success") {
+        toast({
+          title: "Success.",
+          description: data.message,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top",
+        });
+        setIsSubmitting(false);
+        onCloseComplain();
+        router.replace(router.asPath);
+      } else {
+        toast({
+          title: "Error.",
+          description: data.error,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top",
+        });
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.log(err);
+      console.log(err.response);
 
+      console.log(err.message);
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReview = async (docid, apptdate) => {
+    setIsSubmitting(true);
+    try {
+      console.log({
+        doctorid: docid,
+        text: review,
+        stars: rating,
+        apptdate: apptdate,
+      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/reviews/adddoctorreview`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            doctorid: docid,
+            text: review,
+            stars: rating,
+            apptdate: apptdate,
+          }),
+        }
+      );
+      const data = await res.json();
+      if (data.status != "error") {
+        toast({
+          title: "Review added successfully",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        onCloseReview();
+        router.replace(router.asPath);
+      } else {
+        toast({
+          title: "Error",
+          description: data.error,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   const router = useRouter();
 
   return (
@@ -117,6 +239,7 @@ export function AppointmentCard({
             fontFamily={"body"}
             fontWeight={"bold"}
             color={"gray.600"}
+            textTransform={"uppercase"}
           >
             {appointment.doctorschedule_day} - {appointment.appointment_aptdate}{" "}
           </Heading>
@@ -124,10 +247,17 @@ export function AppointmentCard({
             {appointment.doctorschedule_from} -{" "}
             {appointment.doctorschedule_till}
           </Text>
-          <Text fontWeight={"medium"} color="gray.800" mb={4} fontSize={"lg"}>
+          <Text
+            fontWeight={"medium"}
+            textTransform="capitalize"
+            color="gray.800"
+            mb={4}
+            fontSize={"lg"}
+          >
             {appointment.doctor_name}
           </Text>
         </Stack>
+        {filter == "passed" && (
         <Stack
           width={"100%"}
           mt={"2rem"}
@@ -168,7 +298,7 @@ export function AppointmentCard({
           >
             Review
           </Button>
-        </Stack>
+        </Stack>)}
       </Stack>
 
       <Modal
@@ -213,7 +343,16 @@ export function AppointmentCard({
             >
               Close
             </Button>
-            <Button colorScheme="blue" mr={3}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                handleReview(
+                  appointment.doctorschedule_doctorUserId,
+                  appointment.appointment_aptdate
+                );
+              }}
+            >
               Submit Review
             </Button>
           </ModalFooter>
@@ -234,18 +373,20 @@ export function AppointmentCard({
           <ModalHeader>Add a complain</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <RadioGroup onChange={setReason} value={reason}>
-              <Stack direction="column">
-                <Radio value="1">First</Radio>
-                <Radio value="2">Second</Radio>
-                <Radio value="3">Third</Radio>
-              </Stack>
-            </RadioGroup>
-            <Input
-              disabled={reason !== "10"}
-              placeholder="Complain"
-              onChange={(e) => setComplain(e.target.value)}
-            />
+            <Stack>
+              <RadioGroup onChange={setReason} value={reason}>
+                <Stack direction="column">
+                  <Radio value="Punctuality">Doctor was not punctual</Radio>
+                  <Radio value="Harrasment">Harrasment</Radio>
+                  <Radio value="Other">Other</Radio>
+                </Stack>
+              </RadioGroup>
+              <Input
+                disabled={reason !== "Other"}
+                placeholder="Complain"
+                onChange={(e) => setComplain(e.target.value)}
+              />
+            </Stack>
           </ModalBody>
 
           <ModalFooter>
@@ -258,7 +399,16 @@ export function AppointmentCard({
             >
               Close
             </Button>
-            <Button colorScheme="blue" mr={3}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={() => {
+                handleComplain(
+                  appointment.appointment_id,
+                  appointment.appointment_aptdate
+                );
+              }}
+            >
               Submit Complain
             </Button>
           </ModalFooter>
@@ -277,51 +427,55 @@ interface IAppointmnet {
   doctorschedule_from: string;
   doctorschedule_till: string;
   doctor_name: string;
+  filter : string;
 }
 export default function Appointment() {
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState("upcoming");
   const [appointments, setAppointments] = useState<Array<IAppointmnet>>([]);
   const toast = useToast();
   const dispatch = useDispatch();
   const fetchAppointments = async () => {
     setLoading(true);
     try {
-      // const res = await fetch(
-      //   `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/appointments/getappointments`,
-      //   {
-      //     method: "GET",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-      //     },
-      //   }
-      // );
-      // const data = await res.json();
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/appointments/getappointments?filter=${filter}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await res.json();
+      console.log("data", data);
+
       // Had to hardcode the data because the api is not working
-      const data: { data: Array<IAppointmnet> } = {
-        data: [
-          {
-            appointment_id: 1,
-            appointment_aptdate: "2021-09-01",
-            doctorschedule_scheduleid: 1,
-            doctorschedule_location: "Kandy",
-            doctorschedule_day: "Monday",
-            doctorschedule_from: "10:00",
-            doctorschedule_till: "11:00",
-            doctor_name: "Dr. John",
-          },
-          {
-            appointment_id: 2,
-            appointment_aptdate: "2021-09-01",
-            doctorschedule_scheduleid: 2,
-            doctorschedule_location: "Kandy",
-            doctorschedule_day: "Monday",
-            doctorschedule_from: "11:00",
-            doctorschedule_till: "12:00",
-            doctor_name: "Mr. Moana",
-          },
-        ],
-      };
+      // const data: { data: Array<IAppointmnet> } = {
+      //   data: [
+      //     {
+      //       appointment_id: 1,
+      //       appointment_aptdate: "2021-09-01",
+      //       doctorschedule_scheduleid: 1,
+      //       doctorschedule_location: "Kandy",
+      //       doctorschedule_day: "Monday",
+      //       doctorschedule_from: "10:00",
+      //       doctorschedule_till: "11:00",
+      //       doctor_name: "Dr. John",
+      //     },
+      //     {
+      //       appointment_id: 2,
+      //       appointment_aptdate: "2021-09-01",
+      //       doctorschedule_scheduleid: 2,
+      //       doctorschedule_location: "Kandy",
+      //       doctorschedule_day: "Monday",
+      //       doctorschedule_from: "11:00",
+      //       doctorschedule_till: "12:00",
+      //       doctor_name: "Mr. Moana",
+      //     },
+      //   ],
+      // };
       console.log(data);
       setAppointments([...data.data]);
     } catch (err) {
@@ -343,7 +497,7 @@ export default function Appointment() {
       dispatch(fetchUserDetails(localStorage.getItem("token")));
     }
     fetchAppointments();
-  }, []);
+  }, [filter]);
 
   return (
     <>
@@ -358,15 +512,15 @@ export default function Appointment() {
           variant="outline"
           w={["100%", "100%", "25%"]}
           alignSelf="flex-end"
+          onChange={(e) => {
+            setFilter(e.target.value);
+          }}
         >
-          <option value="default" selected>
-            All
-          </option>
           <option value="upcoming">Upcoming</option>
-          <option value="past">Past</option>
+          <option value="passed">Past</option>
         </Select>
         <SimpleGrid
-          columns={[1, 2, 4]}
+          columns={[1, 1, 2, 3]}
           spacing={5}
           padding={{ base: "1", lg: "5" }}
         >
@@ -380,6 +534,7 @@ export default function Appointment() {
                 <AppointmentCard
                   appointment={appointment}
                   key={appointment.appointment_id}
+                  filter={filter}
                 />
               ))}
             </>

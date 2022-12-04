@@ -4,11 +4,12 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
-
-    "forceConsistentCasingInFileNames": true,
+    "strict": false,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": false,
     "noEmit": true,
     "esModuleInterop": true,
+    "noImplicitAny": false,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -16,8 +17,8 @@
     "jsx": "preserve",
     "incremental": true,
     "allowUnreachableCode": false,
-    "alwaysStrict": true,
-    "allowUnusedLabels": false
+    "alwaysStrict": false,
+    "allowUnusedLabels": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

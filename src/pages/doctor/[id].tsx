@@ -145,7 +145,7 @@ export default function Doctor({
         </Stack>
       </Box>
       <Box padding="2px">
-        <Heading align="center" fontWeight={"semibold"}>
+        <Heading  fontWeight={"semibold"}>
           Patient Reviews
         </Heading>
         <Box

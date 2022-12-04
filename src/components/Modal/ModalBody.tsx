@@ -6,7 +6,7 @@ import { ISchedule } from "../../pages/patient";
 export interface IAppointmentModalBody {
   doctor: IDoctor | null;
   onClick: (schedule: ISchedule) => void;
-  selectedSlot: ISchedule | null;
+  selectedSlot?: ISchedule | null;
 }
 export default function AppointmentModalBody({
   doctor,

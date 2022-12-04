@@ -2,14 +2,14 @@ import { Box, Button, Flex, FormControl, Input } from "@chakra-ui/react";
 
 interface ISearchBox {
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement> | React.FormEvent) => void;
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function SearchBox(props: ISearchBox) {
   const { onChange, onClick, onSubmit } = props;
   return (
-      <FormControl>
+      <FormControl onSubmit={props.onClick}>
         <Flex alignItems={"center"} flexWrap="nowrap" justify="center">
           <Input
             flexGrow="3"

@@ -1,5 +1,6 @@
 import { Button, Flex, HStack } from "@chakra-ui/react";
 import Image from "next/image";
+import Link from "next/link";
 import Logo from "../../../public/vercel.svg";
 interface INavBar {
   cta: string;
@@ -7,7 +8,6 @@ interface INavBar {
 export default function NavBar({ cta }: INavBar) {
   return (
     <Flex
-    
       w="100%"
       px={"8"}
       py={"4"}
@@ -21,13 +21,12 @@ export default function NavBar({ cta }: INavBar) {
         <Button
           borderRadius="full"
           bg="whiteAlpha.50"
-          borderColor={"teal.500"}
           borderStyle="solid"
           borderWidth={"2px"}
           textColor="teal.500"
           _hover={{ bg: "teal.500", textColor: "white" }}
         >
-          Sign Up
+          <Link href={"/signup"}>Sign Up</Link>
         </Button>
         <Button
           borderRadius="full"
@@ -35,7 +34,7 @@ export default function NavBar({ cta }: INavBar) {
           textColor="whiteAlpha.900"
           fontWeight={"bolder"}
         >
-          {cta}
+          <Link href={"/login"}>{cta}</Link>
         </Button>
       </HStack>
     </Flex>

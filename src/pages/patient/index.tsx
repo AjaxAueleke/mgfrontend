@@ -3,6 +3,7 @@ import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Footer } from "../../components/Footer";
 import AppointmentModal from "../../components/Modal";
 import PatientMain from "../../components/PatientMain";
 import PatientNav from "../../components/PatientNav";
@@ -43,16 +44,27 @@ export default function Home() {
   const router = useRouter();
   const [doctorList, setDoctorList] = useState<Array<IDoctor>>([]);
   const [loading, setLoading] = useState<Boolean>(false);
+  const [location, setLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>({ latitude: 0, longitude: 0 });
+  const [name, setName] = useState<string>("");
   const toast = useToast();
   const dispath = useDispatch();
 
   const fetchDoctors = async (url: string) => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      setLocation({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+    });
     setLoading(true);
     try {
-      // const response = await fetch(url);
-      // const data = await response.json();
-      // setDoctorList((prev) => [...data.data]);
-      // dispatch(setDoctors(data.data));
+      const response = await fetch(url);
+      const data = await response.json();
+      setDoctorList((prev) => [...data.data]);
+      dispatch(setDoctors(data.data));
     } catch (err) {
       toast({
         position: "top",
@@ -84,19 +96,69 @@ export default function Home() {
   const [search, setSearch] = useState<string>("");
 
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("onChangeSearch");
+    console.log(e.target.value);
     setSearch(e.target.value);
   };
-  const onClickSearch = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/doctor/search?name=${name}`
-    );
-    const data = await res.json();
-    setDoctorList(data);
+  const getNearestDoctors = async (e) => {
+    e.preventDefault();
+    console.log("getNearestDoctors");
+    console.log(location);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/findnearestdoc?lat=${location.latitude}&lon=${location.longitude}&distance=1000`
+      );
+      const data = await response.json();
+      console.log("Get Nearest Doctor", data);
+      if (data.status === "success") {
+        setDoctorList((prev) => [...data.data]);
+        dispatch(setDoctors(data.data));
+      } else {
+        toast({
+          position: "top",
+          title: "Error",
+          description: data.error,
+          status: "error",
+          duration: 3000,
+          isClosable: true,
+        });
+      }
+    } catch (err) {}
+  };
+  const onClickSearch = async (e) => {
+    try {
+      e.preventDefault();
+      setLoading(true);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/search?name=${search}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setDoctorList(data.data);
+    } catch (err) {
+      console.log(err);
+      toast({
+        position: "top",
+        title: "Error",
+        description: "Something went wrong",
+        status: "error",
+        duration: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
       <PatientNav />
-      <PatientMain doctorList={doctorList} isLoading={loading} />
+      <PatientMain
+        doctorList={doctorList}
+        isLoading={loading}
+        onClickSearch={onClickSearch}
+        onChangeSearch={onChangeSearch}
+        getNearestDoctors={getNearestDoctors}
+      />
+      <Footer />
     </>
   );
 }

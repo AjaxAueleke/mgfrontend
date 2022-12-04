@@ -123,21 +123,24 @@ const Signup: NextPage = () => {
     if (Object.keys(errors).length === 0) {
       console.log("PUSHING");
       try {
-        const res = await fetch("http://65.2.20.95:3000/api/v1/users/signup", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*",
-          },
-          body: JSON.stringify({
-            name,
-            email,
-            password,
-            confirmpassword: confirmPassword,
-            phone,
-            gender,
-          }),
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/signup`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Access-Control-Allow-Origin": "*",
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              password,
+              confirmpassword: confirmPassword,
+              phone,
+              gender,
+            }),
+          }
+        );
         const data = await res.json();
         console.log(data);
         if (data.error) {

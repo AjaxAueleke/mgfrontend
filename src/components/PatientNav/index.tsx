@@ -26,7 +26,6 @@ import { useRouter } from "next/router";
 const Links = [
   { text: "Find Doctors", link: "/patient" },
   { text: "See Appointments", link: "/patient/appointment" },
-  { text: "Message", link: "/message" },
 ];
 
 const NavLink = (props: { text: string; link: string }) => {
@@ -99,7 +98,7 @@ export default function PatientNav() {
               >
                 <Avatar size={"sm"} src={user?.photo || ""} />
               </MenuButton>
-              <MenuList borderRadius="md" border={`1px solid #e428f0`}>
+              <MenuList borderRadius="md" border={`1px solid #e4e4e4`}>
                 <MenuItem
                   onClick={() => {
                     router.push("/patient/profile");

@@ -99,7 +99,7 @@ export default function DoctorCard(props: IDoctorCard) {
             transform: "translateY(-2px)",
             boxShadow: "lg",
           }}
-          onClick={() => onOpen(doctor)}
+          onClick={() => {onOpen(doctor)}}
         >
           See Available Days
         </Button>

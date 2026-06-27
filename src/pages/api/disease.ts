@@ -2,31 +2,28 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
 
-type Data = {
-  name: string;
-};
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse
 ) {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: "RAPIDAPI_KEY is not configured" });
+  }
+
   try {
     const options = {
       method: "GET",
       url: "https://medius-disease-medication.p.rapidapi.com/api/v2/disease-medications/E_0000017290",
       params: { country: "IN" },
       headers: {
-        "X-RapidAPI-Key": "***REMOVED***",
+        "X-RapidAPI-Key": apiKey,
         "X-RapidAPI-Host": "medius-disease-medication.p.rapidapi.com",
       },
     };
-    const res = await axios.request(options);
-    console.log(res.data);
+    const response = await axios.request(options);
+    return res.status(200).json(response.data);
   } catch (error) {
-    console.log("ERROR");
-    console.log(error);
+    return res.status(502).json({ error: "lookup unavailable" });
   }
-  res.status(200).json({
-    name: "gay",
-  });
 }

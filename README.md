@@ -59,16 +59,14 @@ src/
   components/    # Reusable UI: NavBar, Footer, Card, Modal, SearchBox, PatientNav, PatientMain
   features/      # Redux slices: auth.ts (user/session), doctors.ts (doctor list)
   modules/       # store.ts — Redux Toolkit store + next-redux-wrapper setup
-  lib/           # Sanity client/config/groq queries (scaffolded — see status note)
   pages/
     index.tsx                          # Landing page
     login.tsx / signup.tsx / forgot.tsx
     patient/                           # Patient dashboard, profile, doctor search
       appointment/                     # Appointment list + booking confirmation/payment
-      disease/                         # Stub page (see status note)
     doctor/[id].tsx                    # Doctor profile, reviews, slot selection
     api/                               # Minimal local API stubs
-  util/          # Helpers (email validation, image, text formatting)
+  util/          # Helpers (email validation, text formatting)
   styles/        # Global + module CSS
 public/          # Static assets
 ```
@@ -100,8 +98,7 @@ cp .env.example .env.local
 |---|---|---|
 | `NEXT_PUBLIC_SERVER_URL` | Yes | Base URL of the SkinCure backend API (e.g. `http://localhost:5000`). All `/api/v1/*` calls are made against it. |
 | `NEXT_PUBLIC_STRIPE_PK` | For payments | Stripe **publishable** key (`pk_test_...` / `pk_live_...`). |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | No | Sanity project ID — only needed if the (currently unused) Sanity/CMS layer is wired up. |
-| `NEXT_PUBLIC_SANITY_DATASET` | No | Sanity dataset name (defaults to `production`). |
+| `RAPIDAPI_KEY` | No | Server-side RapidAPI key for the optional `/api/disease` medication-lookup route. Not exposed to the browser. |
 
 ### Run the dev server
 
@@ -128,13 +125,8 @@ This is a portfolio / in-progress project. Be aware of the following:
 
 - **Requires the backend.** Without `NEXT_PUBLIC_SERVER_URL` pointing at a live SkinCure API,
   auth, doctor, and appointment flows will not return data.
-- **Sanity CMS is scaffolded but unused.** `src/lib/{config,groq,sanity}.tsx` and the
-  `@sanity/*` / `next-sanity` dependencies are leftover from a CMS template and are not imported
-  by any page. They can be removed or wired up depending on direction.
-- **Google Maps is not embedded.** Despite `@googlemaps/react-wrapper` / `google-map-react`
-  being installed, the app only uses the browser geolocation API plus a "view on Google Maps"
-  deep link — no interactive map is rendered.
-- **`src/pages/patient/disease` is a stub** that renders nothing.
+- **Google Maps is not embedded.** The app only uses the browser geolocation API plus a
+  "view on Google Maps" deep link — no interactive map is rendered.
 - **No automated tests yet.** Cypress and Jest are configured as dependencies, but the repo
   does not currently contain test specs.
 

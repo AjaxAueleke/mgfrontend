@@ -113,7 +113,7 @@ const Signup: NextPage = () => {
     }
 
     // if there are no errors, post data
-    for (const key: string in errors) {
+    for (const key in errors) {
       if (errors[key] === "") {
         delete errors[key];
       }

@@ -236,8 +236,7 @@ export default function Profile(props: {}) {
             <Flex justify={"center"} mt={-12}>
               <Avatar
                 size={"xl"}
-                src={userDetails?.photo | ""}
-                alt={"Author"}
+                src={userDetails?.photo || ""}
                 css={{
                   border: "2px solid white",
                 }}

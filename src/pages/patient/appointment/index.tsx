@@ -71,6 +71,7 @@ export function AppointmentCard({
   filter,
 }: {
   appointment: IAppointmnet;
+  filter: string;
 }) {
   const {
     isOpen: isOpenReview,
@@ -426,6 +427,7 @@ interface IAppointmnet {
   doctorschedule_day: string;
   doctorschedule_from: string;
   doctorschedule_till: string;
+  doctorschedule_doctorUserId: number;
   doctor_name: string;
   filter : string;
 }

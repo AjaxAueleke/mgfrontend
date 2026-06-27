@@ -45,7 +45,7 @@ export default function Home() {
               </Text>
               <br />{" "}
               <Text color={"teal.400"} as={"span"}>
-                Appoitments Made Easy
+                Appointments Made Easy
               </Text>{" "}
             </Heading>
             <Text fontSize={{ base: "md", lg: "lg" }} color={"gray.500"}>

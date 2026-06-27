@@ -38,7 +38,6 @@ export interface IDoctor {
 
 export default function Home() {
   const user = useSelector(selectUserState);
-  console.log(user);
   const authState = useSelector(selectUserState);
   const dispatch = useDispatch();
   const router = useRouter();
@@ -96,20 +95,15 @@ export default function Home() {
   const [search, setSearch] = useState<string>("");
 
   const onChangeSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("onChangeSearch");
-    console.log(e.target.value);
     setSearch(e.target.value);
   };
   const getNearestDoctors = async (e) => {
     e.preventDefault();
-    console.log("getNearestDoctors");
-    console.log(location);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/findnearestdoc?lat=${location.latitude}&lon=${location.longitude}&distance=1000`
       );
       const data = await response.json();
-      console.log("Get Nearest Doctor", data);
       if (data.status === "success") {
         setDoctorList((prev) => [...data.data]);
         dispatch(setDoctors(data.data));
@@ -133,10 +127,8 @@ export default function Home() {
         `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/search?name=${search}`
       );
       const data = await res.json();
-      console.log(data);
       setDoctorList(data.data);
     } catch (err) {
-      console.log(err);
       toast({
         position: "top",
         title: "Error",

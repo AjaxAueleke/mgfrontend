@@ -50,7 +50,6 @@ const CheckoutForm = ({
       elements.getElement(CardElement)!
     );
 
-    console.log();
     if (error) {
       toast({
         position: "top",
@@ -63,7 +62,6 @@ const CheckoutForm = ({
     } else {
       try {
         setLoading(true);
-        console.log("data");
 
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/appointments/bookappointment`,
@@ -82,12 +80,6 @@ const CheckoutForm = ({
         );
 
         const data = await res.json();
-        console.log(data);
-        console.log({
-          doctorid: doctor.userId,
-          appointmentid: data.id.id,
-          tokenid: token.id,
-        });
         const res2 = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/bookings/addnewbooking`,
           {
@@ -113,7 +105,6 @@ const CheckoutForm = ({
         });
         router.push("/patient/appointment");
       } catch (err) {
-        console.log(err);
         toast({
           position: "top",
           title: "Error",
@@ -230,12 +221,9 @@ const CheckoutForm = ({
 };
 
 export default function AppointmentConfirm({ doctor, schedueleid }: any) {
-  console.log("doctor", doctor);
-  console.log("schedueleid", schedueleid);
   const scheduele = doctor.doctorschedule.find(
     (item: ISchedule) => item.scheduleid == schedueleid
   );
-  console.log("scheduele", scheduele);
   return (
     <Elements stripe={stripePromise}>
       <CheckoutForm scheduele={scheduele} doctor={doctor} />
@@ -245,7 +233,6 @@ export default function AppointmentConfirm({ doctor, schedueleid }: any) {
 
 export async function getServerSideProps(context: any) {
   const { schedueleid, doctorId } = context.params;
-  console.log(context.params);
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/doctors/${doctorId}`,

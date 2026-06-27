@@ -35,9 +35,7 @@ const Login: NextPage = () => {
   const router = useRouter();
   const toast = useToast();
   const submitHandler = async (e: any) => {
-    console.log("RUNNING");
     e.preventDefault();
-    console.log(errors);
 
     if (email.trim() === "") {
       setErrors((prevState: IError) => ({
@@ -76,7 +74,6 @@ const Login: NextPage = () => {
       }
     }
     if (Object.keys(errors).length === 0) {
-      console.log("PUSHING");
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v1/users/login`,
@@ -94,7 +91,6 @@ const Login: NextPage = () => {
         );
         const data = await res.json();
 
-        console.log(data);
         if (data.error) {
           toast({
             title: "An error occurred.",
@@ -121,7 +117,6 @@ const Login: NextPage = () => {
           router.push("/patient");
         }
       } catch (err) {
-        console.log(err);
         toast({
           title: "An error occurred.",
           description: "We were unable to create your account.",
